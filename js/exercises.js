@@ -39,8 +39,14 @@
         '首に力を入れすぎず、あごは軽く引いておきます。',
         '肩に引っかかる感じや痛みがあれば、小さく回すか中止してください。',
       ],
-      // 見本: 本素材(動画など)ができたら media に書く。それまでは人体モデルの仮の見本
-      media: null,
+      // 見本: 動画(AI生成)を最優先で表示。読み込めないときは人体モデルの仮の見本に切り替わる
+      media: {
+        kind: 'video',
+        sources: [{ src: 'media/shoulder_roll.mp4', type: 'video/mp4' }],
+        fit: 'cover', // 横長の動画を、人物が大きく見えるように切り取って表示
+        credit: { author: 'AI生成', source: 'Google Gemini', license: '自分で生成した動画(利用規約は要確認)' },
+        reviewed: false, // 運動指導者などにフォームを確認してもらえたら true
+      },
       animation: { kind: 'pose', ref: 'shoulder_roll', fallback: 'shoulder' },
       alternatives: ['chest_open', 'neck_tilt'],
     },

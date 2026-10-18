@@ -226,6 +226,8 @@
       v.preload = 'auto';
       v.loop = st.loop;
       if (src.poster) v.poster = src.poster;
+      if (src.fit) v.style.objectFit = src.fit;
+      if (src.position) v.style.objectPosition = src.position;
       v.setAttribute('aria-label', ex.name + 'の見本動画');
       const sources = src.sources || (src.src ? [{ src: src.src }] : []);
       sources.forEach((s, i) => {
@@ -314,8 +316,9 @@
       syncButtons();
     });
 
-    // 毎フレーム: 再生/停止の反映と、人体モデルの姿勢の更新
-    function frame(now) {
+    // 再生/停止の反映と、人体モデルの姿勢の更新。
+    // 描画のタイミング(rAF)だけに頼ると、画面が隠れたときなどに止まるため、0.2秒ごとの確認も併用する
+    function tick(now) {
       if (!st.alive) return;
       const dt = st.last ? Math.min(100, now - st.last) : 0;
       st.last = now;
@@ -325,7 +328,11 @@
         const v = cur.video;
         if (playing && v.paused && !v.ended) {
           const p = v.play();
-          if (p && p.catch) p.catch(() => { st.localPaused = true; syncButtons(); }); // 自動再生できない端末はボタンで再生
+          if (p && p.catch) {
+            // 自動再生が許されない端末だけ、ボタンで再生してもらう。
+            // 一時停止と重なって中断された場合(AbortError)は、次のフレームでやり直す
+            p.catch((err) => { if (err && err.name === 'NotAllowedError') { st.localPaused = true; syncButtons(); } });
+          }
         } else if (!playing && !v.paused) v.pause();
       } else if (cur && cur.kind === 'pose') {
         let t = st.lastT;
@@ -355,17 +362,23 @@
         cur.svg.classList.toggle('is-stopped', stop);
         if (cur.svg.pauseAnimations) { if (stop) cur.svg.pauseAnimations(); else cur.svg.unpauseAnimations(); }
       }
-      st.raf = requestAnimationFrame(frame);
+    }
+    function frame(now) {
+      tick(now);
+      if (st.alive) st.raf = requestAnimationFrame(frame);
     }
 
     function attach(target) {
       target.appendChild(rootEl);
       if (!st.raf && st.alive) st.raf = requestAnimationFrame(frame);
+      if (!st.iv && st.alive) st.iv = setInterval(() => tick(performance.now()), 200);
     }
     function destroy() {
       st.alive = false;
       cancelAnimationFrame(st.raf);
+      clearInterval(st.iv);
       st.raf = 0;
+      st.iv = 0;
       teardownCurrent();
       rootEl.remove();
     }

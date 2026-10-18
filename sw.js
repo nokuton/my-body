@@ -3,7 +3,7 @@
  * 見本の動画・画像(media/ 以下)は大きいので別の保存場所に分け、初めて表示したときに保存する。
  * 動画はアプリ更新のたびに消さない(MEDIA_CACHE の名前を変えたときだけ入れ替わる)。
  * APP_VERSION は設定画面に「アプリの版」として表示される。公開のたびに日付と番号を上げる。 */
-const APP_VERSION = '2026.10.19-2';
+const APP_VERSION = '2026.10.19-5';
 const VERSION = 'mbp-' + APP_VERSION;
 const MEDIA_CACHE = 'mbp-media-v1';
 const FILES = [
@@ -23,10 +23,17 @@ const FILES = [
   'icons/apple-touch-icon.png',
 ];
 
+// 見本動画のうち、最初からオフラインで使えるようにしておくもの(取得できなくてもアプリの更新は止めない)
+const MEDIA_PRECACHE = ['media/shoulder_roll.mp4'];
+
 self.addEventListener('install', (e) => {
   // cache: 'reload' でブラウザの一時保存を通さず、必ず最新のファイルを保存する
   const reqs = FILES.map((f) => new Request(f, { cache: 'reload' }));
-  e.waitUntil(caches.open(VERSION).then((c) => c.addAll(reqs)).then(() => self.skipWaiting()));
+  const media = caches.open(MEDIA_CACHE).then((c) => Promise.all(MEDIA_PRECACHE.map((f) => {
+    const url = new URL(f, self.location).href;
+    return c.match(url).then((hit) => hit || fetch(url).then((r) => (r.ok ? c.put(url, r) : null)));
+  }))).catch(() => {});
+  e.waitUntil(Promise.all([caches.open(VERSION).then((c) => c.addAll(reqs)), media]).then(() => self.skipWaiting()));
 });
 
 self.addEventListener('activate', (e) => {
