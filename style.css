@@ -17,6 +17,12 @@
   --danger-text: #ffffff;
   --danger-soft: #fbe3e1;
   --fig: #26352b;
+  --pm-near: #2f5d8a;
+  --pm-arm: #1d3f61;
+  --pm-far: #9db6cf;
+  --pm-prop: #c9cec6;
+  --pm-floor: #b9beb6;
+  --pm-hint: #e08a1e;
   --ring-track: #e1e4de;
   --shadow: 0 1px 2px rgba(0, 0, 0, .06), 0 4px 16px rgba(0, 0, 0, .06);
   color-scheme: light;
@@ -40,6 +46,12 @@
     --danger-text: #1a0605;
     --danger-soft: #3b1a18;
     --fig: #dfe8e2;
+    --pm-near: #8fc1f0;
+    --pm-arm: #c9e3ff;
+    --pm-far: #3f5a75;
+    --pm-prop: #3a423d;
+    --pm-floor: #4a524c;
+    --pm-hint: #f0b860;
     --ring-track: #2b322e;
     --shadow: none;
     color-scheme: dark;
@@ -63,6 +75,12 @@
   --danger-text: #1a0605;
   --danger-soft: #3b1a18;
   --fig: #dfe8e2;
+  --pm-near: #8fc1f0;
+  --pm-arm: #c9e3ff;
+  --pm-far: #3f5a75;
+  --pm-prop: #3a423d;
+  --pm-floor: #4a524c;
+  --pm-hint: #f0b860;
   --ring-track: #2b322e;
   --shadow: none;
   color-scheme: dark;
@@ -151,10 +169,30 @@ h1, h2, h3, p { margin: 0; }
 .dots i.done { background: var(--accent); }
 .dots i.now { background: var(--text); }
 .stage { flex: 1; min-height: 0; overflow-y: auto; padding: 0 16px 12px; display: flex; flex-direction: column; gap: 10px; }
-.figure-box {
-  background: var(--surface); border: 1px solid var(--line); border-radius: 20px;
-  height: min(30dvh, 240px); display: flex; align-items: center; justify-content: center; overflow: hidden; flex: none;
+.figure-box { background: var(--surface); border: 1px solid var(--line); border-radius: 20px; overflow: hidden; flex: none; }
+.guide { position: relative; display: flex; flex-direction: column; }
+.guide-stage { height: min(38dvh, 330px); display: flex; align-items: center; justify-content: center; padding: 6px; }
+.guide-stage > svg, .guide-stage > video, .guide-stage > img { width: 100%; height: 100%; }
+.guide-stage > .fig { width: auto; }
+.guide-phase { min-height: 1.6em; padding: 0 12px; font-weight: 700; color: var(--accent); text-align: center; font-size: .95rem; }
+.guide-ctrl { position: absolute; top: 8px; right: 8px; display: flex; gap: 6px; }
+.guide-btn {
+  min-height: 44px; min-width: 44px; padding: 0 12px; border-radius: 999px; border: 1px solid var(--line);
+  background: var(--surface); color: var(--text); font: inherit; font-size: .85rem; font-weight: 700; cursor: pointer; opacity: .92;
 }
+.guide-btn[aria-pressed="false"] { background: var(--surface-2); }
+.guide-keys { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; padding: 6px 8px 4px; }
+.guide-key {
+  display: flex; flex-direction: column; align-items: center; gap: 2px; padding: 4px; border-radius: 12px;
+  border: 1px solid var(--line); background: var(--surface-2); color: var(--text); font: inherit; font-size: .72rem; cursor: pointer;
+}
+.guide-key svg, .guide-key img { width: 100%; height: 64px; object-fit: contain; }
+.guide-note { margin: 0; padding: 2px 12px 10px; font-size: .72rem; color: var(--muted); line-height: 1.5; }
+.fig.is-stopped, .fig.is-stopped * { animation-play-state: paused !important; }
+/* 運動中・休憩中はタイマーを見やすくするため、姿勢の一覧と注記をしまい、見本を少し小さくする */
+.phase-countdown .guide-keys, .phase-active .guide-keys, .phase-rest .guide-keys,
+.phase-countdown .guide-note, .phase-active .guide-note, .phase-rest .guide-note { display: none; }
+.phase-countdown .guide-stage, .phase-active .guide-stage, .phase-rest .guide-stage { height: min(33dvh, 290px); }
 .fig { height: 100%; width: auto; max-width: 100%; color: var(--fig); }
 .fig-media { width: 100%; height: 100%; object-fit: contain; }
 .fig-missing { color: var(--muted); }
@@ -313,3 +351,17 @@ details.caution { border-color: var(--warn); background: var(--warn-soft); }
   .fig, .fig * { animation-duration: 8s !important; }
   .ring .bar { transition: none; }
 }
+
+/* ---- 人体モデルの見本(poses.js) ---- */
+.pm { width: 100%; height: 100%; display: block; }
+.pm line { stroke-linecap: round; }
+.pm .pm-near { stroke: var(--pm-near); }
+.pm .pm-far { stroke: var(--pm-far); }
+.pm .pm-arm { stroke: var(--pm-arm); }
+.pm .pm-body { fill: var(--pm-near); stroke: var(--pm-near); stroke-width: 2; stroke-linejoin: round; }
+.pm line.pm-body { fill: none; }
+.pm .pm-prop { fill: var(--pm-prop); }
+.pm .pm-floor { stroke: var(--pm-floor); stroke-width: 2; }
+.pm .pm-shadow { fill: var(--pm-floor); opacity: .35; }
+.pm .pm-hint-ring { fill: none; stroke: var(--pm-hint); stroke-width: 2; stroke-dasharray: 5 4; }
+.pm .pm-hint-head { fill: var(--pm-hint); }

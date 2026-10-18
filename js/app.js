@@ -25,6 +25,7 @@
     lastCueKey: '',
     infoOpen: { desc: true, caution: true },
     renderedIndex: -1,
+    guide: null,             // 動作見本のプレイヤー { key, ctl }
   };
   let settings = Store.loadSettings();
   let loopId = null;
@@ -283,16 +284,46 @@
     const keepScroll = stage && ui.session && ui.renderedIndex === ui.session.index ? stage.scrollTop : 0;
     const views = { home: viewHome, precheck: viewPrecheck, player: viewPlayer, result: viewResult, history: viewHistory, settings: viewSettings };
     $app.innerHTML = (views[ui.screen] || viewHome)();
-    if (ui.screen === 'player' && ui.session) {
+    if (ui.screen === 'player' && ui.session && !Session.isTerminal(ui.session)) {
       ui.renderedIndex = ui.session.index;
+      mountGuide();
       const st = document.getElementById('stage');
       if (st) st.scrollTop = keepScroll;
-      const svg = $app.querySelector('svg.fig');
-      if (svg && svg.pauseAnimations) {
-        if (ui.session.phase === P.PAUSED) svg.pauseAnimations(); else svg.unpauseAnimations();
-      }
       updateLive(Date.now());
+    } else {
+      unmountGuide();
     }
+  }
+
+  // ---- 動作見本 ----
+  // 画面を描き直しても見本(動画など)は作り直さず、同じ種目なら付け替えるだけにする
+  function mountGuide() {
+    const box = document.getElementById('figBox');
+    if (!box) return;
+    const s = ui.session;
+    const ex = exOf(s);
+    const key = `${s.id}|${s.index}|${ex.id}`;
+    if (ui.guide && ui.guide.key === key) {
+      ui.guide.ctl.attach(box);
+      return;
+    }
+    unmountGuide();
+    ui.guide = { key, ctl: Figures.mount(box, ex, { clock: guideClock }) };
+  }
+  function unmountGuide() {
+    if (ui.guide) ui.guide.ctl.destroy();
+    ui.guide = null;
+  }
+  // 見本の動きを、運動中はタイマー(音声のカウント)とそろえる
+  function guideClock() {
+    const s = ui.session;
+    if (!s) return { sync: null, sessionPaused: true };
+    const paused = s.phase === P.PAUSED || !!ui.sheet;
+    if (s.phase !== P.ACTIVE) return { sync: null, sessionPaused: paused };
+    const step = s.plan[s.index];
+    if (step.measure !== 'reps') return { sync: null, sessionPaused: paused };
+    const el = Session.elapsedMs(s.timer, Date.now());
+    return { sync: (el % step.msPerRep) / step.msPerRep, sessionPaused: paused };
   }
 
   function viewHome() {
@@ -391,7 +422,7 @@
       </header>
       <div class="stage" id="stage">
         ${ui.conflict ? '<div class="banner banner-warn">別の画面で運動が始まったため一時停止しています。</div>' : ''}
-        <div class="figure-box">${Figures.render(ex.animation)}</div>
+        <div class="figure-box" id="figBox"></div>
         <div class="ex-head">
           <h1 class="ex-name">${esc(ex.name)}</h1>
           <span class="set-badge">セット <b>${s.set}</b>/${step.sets}${v.setLabel ? `・<b>${esc(v.setLabel)}</b>` : ''}</span>
