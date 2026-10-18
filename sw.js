@@ -1,8 +1,10 @@
 /* オフラインでも開けるように、アプリのファイルを端末に保存しておく。
  * アプリのファイルを更新したら VERSION を上げる(古い保存分が入れ替わる)。
  * 見本の動画・画像(media/ 以下)は大きいので別の保存場所に分け、初めて表示したときに保存する。
- * 動画はアプリ更新のたびに消さない(MEDIA_CACHE の名前を変えたときだけ入れ替わる)。 */
-const VERSION = 'mbp-v3';
+ * 動画はアプリ更新のたびに消さない(MEDIA_CACHE の名前を変えたときだけ入れ替わる)。
+ * APP_VERSION は設定画面に「アプリの版」として表示される。公開のたびに日付と番号を上げる。 */
+const APP_VERSION = '2026.10.19-2';
+const VERSION = 'mbp-' + APP_VERSION;
 const MEDIA_CACHE = 'mbp-media-v1';
 const FILES = [
   './',
@@ -33,6 +35,11 @@ self.addEventListener('activate', (e) => {
       .then((keys) => Promise.all(keys.filter((k) => k !== VERSION && k !== MEDIA_CACHE).map((k) => caches.delete(k))))
       .then(() => self.clients.claim()),
   );
+});
+
+// 画面から「今の版は?」と聞かれたら答える
+self.addEventListener('message', (e) => {
+  if (e.data && e.data.type === 'version' && e.ports && e.ports[0]) e.ports[0].postMessage({ version: APP_VERSION });
 });
 
 self.addEventListener('fetch', (e) => {

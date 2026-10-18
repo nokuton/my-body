@@ -422,6 +422,7 @@
       </header>
       <div class="stage" id="stage">
         ${ui.conflict ? '<div class="banner banner-warn">別の画面で運動が始まったため一時停止しています。</div>' : ''}
+        ${upd.ready ? '<div class="banner banner-info small">新しい版が届いています。運動が終わってホームに戻ると、自動で切り替わります。</div>' : ''}
         <div class="figure-box" id="figBox"></div>
         <div class="ex-head">
           <h1 class="ex-name">${esc(ex.name)}</h1>
@@ -631,6 +632,12 @@
       <div class="setting"><span class="label">振動</span>${seg('vibrate', [[true, 'ON'], [false, 'OFF']])}</div>
       <div class="setting"><span class="label">テーマ</span>${seg('theme', [['system', '端末に合わせる'], ['light', 'ライト'], ['dark', 'ダーク']])}</div>
       <div class="setting"><span class="label">文字の大きさ</span>${seg('fontSize', [['normal', '標準'], ['large', '大きめ'], ['xlarge', '特大']])}</div>
+      <div class="card setting">
+        <span class="label">アプリの版</span>
+        <span id="appVersion">${upd.version ? esc(upd.version) : swUsable ? '確認中…' : 'この開き方では表示できません(オフライン機能なし)'}</span>
+        ${swUsable ? '<button class="btn" data-action="check-update">新しい版を確認する</button>' : ''}
+        <span class="small muted">新しい版は、アプリを開いたときや画面に戻ったときに自動で取り込まれ、ホーム画面にいるときに切り替わります。</span>
+      </div>
     </section>`;
   }
 
@@ -650,6 +657,14 @@
 
   // ---- 操作 ----
   const handlers = {
+    'check-update'() {
+      toast('確認しています…');
+      checkForUpdate().then(() => {
+        const r = upd.reg;
+        if (r && (r.installing || r.waiting)) toast('新しい版を取り込んでいます。まもなく切り替わります');
+        else if (!upd.ready) toast('最新の版です');
+      });
+    },
     'preview-voice'() {
       Voice.unlock();
       if (Voice.style === 'chime') {
@@ -662,6 +677,7 @@
     go(el) {
       ui.screen = el.dataset.to;
       if (ui.screen === 'home') { ui.lastRecord = null; if (ui.session && Session.isTerminal(ui.session)) ui.session = null; }
+      if (applyUpdateIfSafe()) return; // 新しい版が届いていれば、ここで切り替える
       render();
       window.scrollTo(0, 0);
     },
@@ -790,8 +806,60 @@
     if (s && Session.isTimed(s)) { e.preventDefault(); e.returnValue = ''; }
   });
 
+  // ---- 新しい版への自動切り替え ----
+  // 新しい版は Service Worker が裏で取り込み、取り込み終わると controllerchange が届く。
+  // 運動中・結果画面では切り替えず、ホームに戻ったときに読み込み直す。
+  const upd = { reg: null, hadController: false, ready: false, reloading: false, version: '' };
+  const swUsable = 'serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost');
+
+  function applyUpdateIfSafe() {
+    if (!upd.ready || upd.reloading) return false;
+    if ((ui.session && !Session.isTerminal(ui.session)) || ui.screen === 'player' || ui.screen === 'result') return false;
+    upd.reloading = true;
+    location.reload();
+    return true;
+  }
+  function fetchVersion() {
+    const c = navigator.serviceWorker && navigator.serviceWorker.controller;
+    if (!c) return;
+    const ch = new MessageChannel();
+    ch.port1.onmessage = (e) => {
+      upd.version = (e.data && e.data.version) || '';
+      if (ui.screen === 'settings') render();
+    };
+    c.postMessage({ type: 'version' }, [ch.port2]);
+  }
+  function checkForUpdate() {
+    return upd.reg ? upd.reg.update().catch(() => {}) : Promise.resolve();
+  }
+  function setupUpdates() {
+    if (!swUsable) return;
+    upd.hadController = !!navigator.serviceWorker.controller;
+    navigator.serviceWorker.addEventListener('controllerchange', () => {
+      if (!upd.hadController) {
+        // はじめて開いたときの登録。読み込み直す必要はない
+        upd.hadController = true;
+        fetchVersion();
+        return;
+      }
+      upd.ready = true;
+      if (!applyUpdateIfSafe()) render();
+    });
+    navigator.serviceWorker.register('sw.js')
+      .then((reg) => { upd.reg = reg; fetchVersion(); })
+      .catch(() => {});
+    // スマホは閉じたつもりでも裏で開いたままのことが多いので、画面に戻るたびに新しい版を確かめる
+    document.addEventListener('visibilitychange', () => {
+      if (document.visibilityState === 'visible') {
+        checkForUpdate();
+        applyUpdateIfSafe();
+      }
+    });
+  }
+
   // ---- 起動 ----
   function boot() {
+    setupUpdates();
     applySettings();
     Voice.onVoicesChanged(() => { if (ui.screen === 'settings') render(); });
     const snap = Store.loadSnapshot();
