@@ -1,0 +1,315 @@
+/* ---- 色(ライト / ダーク) ---- */
+:root {
+  --bg: #f4f5f2;
+  --surface: #ffffff;
+  --surface-2: #eceee9;
+  --text: #1c211d;
+  --muted: #5b645d;
+  --line: #d6dad3;
+  --accent: #1f7a55;
+  --accent-text: #ffffff;
+  --accent-soft: #dcefe5;
+  --rest: #2f6db3;
+  --rest-soft: #dde8f6;
+  --warn: #9a5b00;
+  --warn-soft: #fbefd9;
+  --danger: #c3302a;
+  --danger-text: #ffffff;
+  --danger-soft: #fbe3e1;
+  --fig: #26352b;
+  --ring-track: #e1e4de;
+  --shadow: 0 1px 2px rgba(0, 0, 0, .06), 0 4px 16px rgba(0, 0, 0, .06);
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #111412;
+    --surface: #1a1f1c;
+    --surface-2: #242a26;
+    --text: #eef2ee;
+    --muted: #a3ada6;
+    --line: #333b36;
+    --accent: #3fbf86;
+    --accent-text: #08130d;
+    --accent-soft: #1b3428;
+    --rest: #6ea8ec;
+    --rest-soft: #1a2a3d;
+    --warn: #f0b860;
+    --warn-soft: #3a2e17;
+    --danger: #ff6b62;
+    --danger-text: #1a0605;
+    --danger-soft: #3b1a18;
+    --fig: #dfe8e2;
+    --ring-track: #2b322e;
+    --shadow: none;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #111412;
+  --surface: #1a1f1c;
+  --surface-2: #242a26;
+  --text: #eef2ee;
+  --muted: #a3ada6;
+  --line: #333b36;
+  --accent: #3fbf86;
+  --accent-text: #08130d;
+  --accent-soft: #1b3428;
+  --rest: #6ea8ec;
+  --rest-soft: #1a2a3d;
+  --warn: #f0b860;
+  --warn-soft: #3a2e17;
+  --danger: #ff6b62;
+  --danger-text: #1a0605;
+  --danger-soft: #3b1a18;
+  --fig: #dfe8e2;
+  --ring-track: #2b322e;
+  --shadow: none;
+  color-scheme: dark;
+}
+
+/* ---- 文字サイズ(設定で切替) ---- */
+html { font-size: 18px; }
+html[data-font="large"] { font-size: 21px; }
+html[data-font="xlarge"] { font-size: 24px; }
+
+* { box-sizing: border-box; }
+html, body { margin: 0; height: 100%; }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: "Hiragino Sans", "Hiragino Kaku Gothic ProN", "Noto Sans JP", "Yu Gothic UI", "Meiryo", system-ui, sans-serif;
+  line-height: 1.6;
+  -webkit-text-size-adjust: 100%;
+  -webkit-tap-highlight-color: transparent;
+  overscroll-behavior-y: none;
+}
+button { font: inherit; color: inherit; }
+h1, h2, h3, p { margin: 0; }
+.app { max-width: 560px; margin: 0 auto; min-height: 100dvh; display: flex; flex-direction: column; }
+.screen { flex: 1; display: flex; flex-direction: column; padding: 16px 16px calc(16px + env(safe-area-inset-bottom)); gap: 16px; }
+.screen-title { font-size: 1.4rem; font-weight: 700; line-height: 1.3; }
+.muted { color: var(--muted); }
+.small { font-size: .85rem; }
+.spacer { flex: 1; }
+
+/* ---- ボタン ---- */
+.btn {
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+  min-height: 56px; padding: 10px 16px; border-radius: 16px;
+  border: 2px solid var(--line); background: var(--surface); color: var(--text);
+  font-size: 1rem; font-weight: 700; cursor: pointer; text-align: center; text-decoration: none;
+  touch-action: manipulation; user-select: none;
+}
+.btn:active { transform: scale(.98); }
+.btn:disabled { opacity: .4; cursor: not-allowed; transform: none; }
+.btn:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+.btn-primary { background: var(--accent); border-color: var(--accent); color: var(--accent-text); }
+.btn-big { min-height: 76px; font-size: 1.3rem; border-radius: 20px; }
+.btn-danger { background: var(--danger); border-color: var(--danger); color: var(--danger-text); }
+.btn-danger-outline { border-color: var(--danger); color: var(--danger); background: var(--danger-soft); }
+.btn-ghost { background: transparent; border-color: transparent; min-height: 48px; padding: 6px 10px; }
+.row { display: flex; gap: 12px; }
+.row > * { flex: 1; }
+.stack { display: flex; flex-direction: column; gap: 12px; }
+
+/* ---- カード ---- */
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: 20px; padding: 16px; box-shadow: var(--shadow); }
+.mode-card { display: flex; flex-direction: column; gap: 8px; text-align: left; width: 100%; cursor: pointer; }
+.mode-card .mode-name { font-size: 1.25rem; font-weight: 700; }
+.mode-card .meta { display: flex; gap: 12px; flex-wrap: wrap; color: var(--muted); font-size: .9rem; }
+.mode-card .go { margin-top: 4px; }
+.banner { border-radius: 16px; padding: 12px 16px; font-size: .95rem; }
+.banner-warn { background: var(--warn-soft); color: var(--text); border: 1px solid var(--warn); }
+.banner-info { background: var(--accent-soft); }
+.banner-danger { background: var(--danger-soft); border: 1px solid var(--danger); }
+.toast {
+  position: fixed; left: 50%; bottom: calc(24px + env(safe-area-inset-bottom)); transform: translateX(-50%);
+  background: var(--text); color: var(--bg); padding: 10px 18px; border-radius: 999px; font-size: .9rem;
+  z-index: 50; max-width: calc(100% - 32px); text-align: center;
+}
+
+/* ---- ホーム ---- */
+.brand { display: flex; align-items: center; justify-content: space-between; }
+.brand h1 { font-size: 1.15rem; letter-spacing: .08em; }
+
+/* ---- 体調チェック ---- */
+.check-list { display: flex; flex-direction: column; gap: 10px; }
+.check {
+  display: flex; align-items: center; gap: 12px; min-height: 56px; padding: 10px 14px;
+  border: 2px solid var(--line); border-radius: 14px; background: var(--surface); cursor: pointer;
+}
+.check input { width: 26px; height: 26px; accent-color: var(--danger); flex: none; }
+.check:has(input:checked) { border-color: var(--danger); background: var(--danger-soft); }
+
+/* ---- プレイヤー ---- */
+.player { padding: 0; gap: 0; flex: none; height: 100vh; height: 100dvh; min-height: 0; overflow: hidden; }
+.topbar { display: flex; align-items: center; gap: 8px; padding: 8px 8px 4px; }
+.topbar .progress { flex: 1; text-align: center; font-size: .9rem; color: var(--muted); }
+.dots { display: flex; gap: 5px; justify-content: center; margin-top: 4px; }
+.dots i { width: 8px; height: 8px; border-radius: 50%; background: var(--line); }
+.dots i.done { background: var(--accent); }
+.dots i.now { background: var(--text); }
+.stage { flex: 1; min-height: 0; overflow-y: auto; padding: 0 16px 12px; display: flex; flex-direction: column; gap: 10px; }
+.figure-box {
+  background: var(--surface); border: 1px solid var(--line); border-radius: 20px;
+  height: min(30dvh, 240px); display: flex; align-items: center; justify-content: center; overflow: hidden; flex: none;
+}
+.fig { height: 100%; width: auto; max-width: 100%; color: var(--fig); }
+.fig-media { width: 100%; height: 100%; object-fit: contain; }
+.fig-missing { color: var(--muted); }
+.ex-head { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; flex-wrap: wrap; }
+.ex-name { font-size: 1.5rem; font-weight: 800; line-height: 1.25; }
+.set-badge { font-size: .95rem; font-weight: 700; color: var(--muted); white-space: nowrap; }
+.set-badge b { color: var(--text); }
+.clock { display: flex; align-items: center; gap: 16px; }
+.ring { width: 112px; height: 112px; flex: none; transform: rotate(-90deg); }
+.ring circle { fill: none; stroke-width: 10; }
+.ring .track { stroke: var(--ring-track); }
+.ring .bar { stroke: var(--accent); stroke-linecap: round; transition: stroke-dashoffset .25s linear; }
+.phase-rest .ring .bar { stroke: var(--rest); }
+.phase-countdown .ring .bar { stroke: var(--warn); }
+.clock-main { display: flex; flex-direction: column; }
+.clock-num { font-size: 3.2rem; font-weight: 800; line-height: 1.05; font-variant-numeric: tabular-nums; letter-spacing: .02em; }
+.clock-num small { font-size: 1.2rem; font-weight: 700; color: var(--muted); }
+.phase-label { font-size: 1rem; font-weight: 700; }
+.phase-active .phase-label { color: var(--accent); }
+.phase-rest .phase-label { color: var(--rest); }
+.phase-countdown .phase-label { color: var(--warn); }
+.phase-paused .phase-label { color: var(--muted); }
+.next-up { font-size: .9rem; color: var(--muted); }
+details.info { background: var(--surface); border: 1px solid var(--line); border-radius: 16px; padding: 4px 14px; }
+details.info summary { min-height: 44px; display: flex; align-items: center; font-weight: 700; cursor: pointer; list-style: none; }
+details.info summary::-webkit-details-marker { display: none; }
+details.info summary::after { content: "＋"; margin-left: auto; color: var(--muted); }
+details.info[open] summary::after { content: "－"; }
+details.info ol, details.info ul { margin: 0 0 10px; padding-left: 1.3em; }
+details.info li + li { margin-top: 4px; }
+details.caution { border-color: var(--warn); background: var(--warn-soft); }
+.alt-list { display: flex; flex-wrap: wrap; gap: 8px; }
+.alt-list .btn { min-height: 48px; flex: 1 1 auto; font-size: .95rem; }
+.controls {
+  padding: 10px 16px calc(12px + env(safe-area-inset-bottom)); display: flex; flex-direction: column; gap: 10px;
+  background: var(--bg); border-top: 1px solid var(--line);
+}
+
+/* ---- シート(下から出る確認画面) ---- */
+.sheet-backdrop { position: fixed; inset: 0; background: rgba(0, 0, 0, .5); z-index: 40; display: flex; align-items: flex-end; justify-content: center; }
+.sheet {
+  width: 100%; max-width: 560px; max-height: 92dvh; overflow-y: auto; background: var(--bg);
+  border-radius: 24px 24px 0 0; padding: 20px 16px calc(16px + env(safe-area-inset-bottom));
+  display: flex; flex-direction: column; gap: 14px;
+}
+.sheet h2 { font-size: 1.3rem; }
+
+/* ---- 結果・履歴 ---- */
+.result-icon { font-size: 3rem; text-align: center; }
+.stats { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.stat { background: var(--surface); border: 1px solid var(--line); border-radius: 16px; padding: 12px; }
+.stat .v { font-size: 1.5rem; font-weight: 800; font-variant-numeric: tabular-nums; }
+.stat .k { font-size: .85rem; color: var(--muted); }
+.item-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 6px; }
+.item-list li { display: flex; justify-content: space-between; gap: 8px; padding: 8px 0; border-bottom: 1px solid var(--line); }
+.tag { font-size: .8rem; font-weight: 700; padding: 2px 10px; border-radius: 999px; white-space: nowrap; align-self: center; }
+.tag-done { background: var(--accent-soft); color: var(--accent); }
+.tag-skip { background: var(--surface-2); color: var(--muted); }
+.tag-stop { background: var(--danger-soft); color: var(--danger); }
+.tag-abort { background: var(--warn-soft); color: var(--warn); }
+.rpe { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; }
+.rpe .btn { min-height: 56px; padding: 4px; font-size: 1.2rem; }
+.rpe .btn[aria-pressed="true"] { background: var(--accent); color: var(--accent-text); border-color: var(--accent); }
+.history-item { display: flex; flex-direction: column; gap: 4px; }
+.history-item .top { display: flex; justify-content: space-between; gap: 8px; align-items: center; }
+.empty { text-align: center; color: var(--muted); padding: 40px 0; }
+
+/* ---- 設定 ---- */
+.setting { display: flex; flex-direction: column; gap: 8px; }
+.setting .label { font-weight: 700; }
+.seg { display: flex; gap: 8px; }
+.seg .btn { flex: 1; min-height: 52px; padding: 6px; font-size: .95rem; }
+.seg .btn[aria-pressed="true"], .setting .stack .btn[aria-pressed="true"] { background: var(--accent); color: var(--accent-text); border-color: var(--accent); }
+
+/* ---- 動作見本(内蔵の棒人間アニメ) ---- */
+.fig { fill: none; stroke: currentColor; stroke-width: 6; stroke-linecap: round; stroke-linejoin: round; }
+.fig .head { fill: currentColor; stroke: none; }
+.fig .ground { stroke-width: 3; opacity: .3; }
+.fig .prop { stroke-width: 4; opacity: .45; }
+.fig g { transform-box: view-box; }
+.fig .p-arm { transform-origin: 100px 62px; }
+.fig .p-fore { transform-origin: 100px 88px; }
+.fig .p-leg { transform-origin: 100px 112px; }
+.fig .p-shin { transform-origin: 100px 142px; }
+.fig .p-upper { transform-origin: 100px 112px; }
+.fig .p-head { transform-origin: 100px 54px; }
+.fig .p-thigh { transform-origin: 90px 120px; }
+.fig .p-thigh .p-shin { transform-origin: 122px 120px; }
+.fig .p-foot { transform-origin: 122px 168px; }
+.fig .p-leg-far { opacity: .45; }
+.is-paused .fig, .is-paused .fig * { animation-play-state: paused !important; }
+
+.m-neck .p-head { animation: mNeck 6s ease-in-out infinite; }
+@keyframes mNeck { 0%, 100% { transform: rotate(0); } 25%, 42% { transform: rotate(-22deg); } 58%, 75% { transform: rotate(22deg); } }
+
+.m-shoulder .p-arms { animation: mShrug 2s ease-in-out infinite; }
+@keyframes mShrug { 0%, 100% { transform: translate(0, 0); } 25% { transform: translate(0, -9px); } 50% { transform: translate(-2px, -4px); } 75% { transform: translate(0, 0); } }
+
+.m-chest .p-arm-l { animation: mChestL 4s ease-in-out infinite; }
+.m-chest .p-arm-r { animation: mChestR 4s ease-in-out infinite; }
+@keyframes mChestL { 50% { transform: rotate(28deg); } }
+@keyframes mChestR { 50% { transform: rotate(-28deg); } }
+
+.m-sideBend .p-upper { animation: mBend 8s ease-in-out infinite; }
+.m-sideBend .p-arm-r { animation: mRaiseR 8s ease-in-out infinite; }
+.m-sideBend .p-arm-l { animation: mRaiseL 8s ease-in-out infinite; }
+@keyframes mBend { 0%, 10%, 50%, 60%, 100% { transform: rotate(0); } 25%, 40% { transform: rotate(-14deg); } 75%, 90% { transform: rotate(14deg); } }
+@keyframes mRaiseR { 0%, 10%, 50%, 100% { transform: rotate(0); } 25%, 40% { transform: rotate(-150deg); } }
+@keyframes mRaiseL { 0%, 60%, 100% { transform: rotate(0); } 75%, 90% { transform: rotate(150deg); } }
+
+.m-armCircle .p-arm-l { animation: mCircleL 3s ease-in-out infinite; }
+.m-armCircle .p-arm-r { animation: mCircleR 3s ease-in-out infinite; }
+@keyframes mCircleL { 0%, 100% { transform: rotate(-14deg); } 50% { transform: rotate(14deg); } }
+@keyframes mCircleR { 0%, 100% { transform: rotate(14deg); } 50% { transform: rotate(-14deg); } }
+
+.m-march .p-leg-l { animation: mThigh 1.6s ease-in-out infinite; }
+.m-march .p-shin-l { animation: mShin 1.6s ease-in-out infinite; }
+.m-march .p-leg-r { animation: mThigh 1.6s ease-in-out -.8s infinite; }
+.m-march .p-shin-r { animation: mShin 1.6s ease-in-out -.8s infinite; }
+.m-march .p-arm-l { animation: mSwing 1.6s ease-in-out -.8s infinite; }
+.m-march .p-arm-r { animation: mSwing 1.6s ease-in-out infinite; }
+@keyframes mThigh { 0%, 50%, 100% { transform: rotate(0); } 25% { transform: rotate(-38deg); } }
+@keyframes mShin { 0%, 50%, 100% { transform: rotate(0); } 25% { transform: rotate(62deg); } }
+@keyframes mSwing { 0%, 50%, 100% { transform: rotate(0); } 25% { transform: rotate(-22deg); } }
+
+.m-calf .p-all { animation: mRise 2s ease-in-out infinite; }
+@keyframes mRise { 0%, 100% { transform: translateY(0); } 40%, 60% { transform: translateY(-9px); } }
+
+.m-squat .p-all { animation: mSqBody 4s ease-in-out infinite; }
+.m-squat .p-leg { animation: mSqThigh 4s ease-in-out infinite; }
+.m-squat .p-shin { animation: mSqShin 4s ease-in-out infinite; }
+.m-squat .p-arm-l { animation: mSqArmL 4s ease-in-out infinite; }
+.m-squat .p-arm-r { animation: mSqArmR 4s ease-in-out infinite; }
+@keyframes mSqBody { 0%, 100% { transform: translate(0, 0); } 45%, 55% { transform: translate(-26px, 12px); } }
+@keyframes mSqThigh { 0%, 100% { transform: rotate(0); } 45%, 55% { transform: rotate(-60deg); } }
+@keyframes mSqShin { 0%, 100% { transform: rotate(0); } 45%, 55% { transform: rotate(60deg); } }
+@keyframes mSqArmL { 0%, 100% { transform: rotate(0); } 45%, 55% { transform: rotate(-101deg); } }
+@keyframes mSqArmR { 0%, 100% { transform: rotate(0); } 45%, 55% { transform: rotate(-61deg); } }
+
+.m-wallPush .p-all { transform-origin: 100px 172px; animation: mLean 3s ease-in-out infinite; }
+.m-wallPush .p-fore { animation: mBendElbow 3s ease-in-out infinite; }
+@keyframes mLean { 0%, 100% { transform: rotate(8deg); } 50% { transform: rotate(18deg); } }
+@keyframes mBendElbow { 0%, 100% { transform: rotate(0); } 50% { transform: rotate(-55deg); } }
+
+.m-seatedLegRaise .p-leg-near-shin { animation: mKneeExt 3s ease-in-out infinite; }
+@keyframes mKneeExt { 0%, 100% { transform: rotate(0); } 35%, 65% { transform: rotate(-80deg); } }
+
+.m-seatedMarch .p-leg-near { animation: mSeatLift 1.6s ease-in-out infinite; }
+.m-seatedMarch .p-leg-far { animation: mSeatLift 1.6s ease-in-out -.8s infinite; }
+@keyframes mSeatLift { 0%, 50%, 100% { transform: rotate(0); } 25% { transform: rotate(-24deg); } }
+
+.m-ankle .p-foot { animation: mAnkle 2s ease-in-out infinite; }
+@keyframes mAnkle { 0%, 100% { transform: rotate(-28deg); } 50% { transform: rotate(28deg); } }
+
+@media (prefers-reduced-motion: reduce) {
+  .fig, .fig * { animation-duration: 8s !important; }
+  .ring .bar { transition: none; }
+}
